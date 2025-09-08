@@ -4,7 +4,6 @@ typedef struct _CustomData {
     GstElement *pipeline;
     GstElement *udpsrc;
     GstElement *tsdemux;
-    GstElement *tee;
     GstElement *videoQueue;
     GstElement *dataQueue;
     GstElement *h264parse;
@@ -106,7 +105,6 @@ int main(int argc, char *argv[]) {
     data.pipeline = gst_pipeline_new("receiver-pipeline");
     data.udpsrc = gst_element_factory_make("udpsrc", "src");
     data.tsdemux = gst_element_factory_make("tsdemux", "demux");
-    data.tee = gst_element_factory_make("tee", "tee");
     
     /* Video processing elements */
     data.videoQueue = gst_element_factory_make("queue", "video-queue");

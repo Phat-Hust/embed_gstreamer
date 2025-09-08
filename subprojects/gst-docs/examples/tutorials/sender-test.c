@@ -12,8 +12,8 @@ static gboolean push_metadata(gpointer user_data) {
     gst_buffer_fill(buffer, 0, meta_str, strlen(meta_str));
 
     // Timestamp
-    GST_BUFFER_PTS(buffer) = gst_util_uint64_scale(counter, GST_SECOND, 30); // 30 fps
-    GST_BUFFER_DURATION(buffer) = gst_util_uint64_scale(1, GST_SECOND, 30);
+    GST_BUFFER_PTS(buffer) = gst_util_uint64_scale(counter, GST_SECOND, 10); // 30 fps
+    GST_BUFFER_DURATION(buffer) = gst_util_uint64_scale(1, GST_SECOND, 10);
 
     GstFlowReturn ret;
     g_signal_emit_by_name(appsrc, "push-buffer", buffer, &ret);
