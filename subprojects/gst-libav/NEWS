@@ -1,0 +1,371 @@
+GStreamer 1.27.x Release Notes
+
+GStreamer 1.27.x is an API/ABI-unstable development series leading up to the stable 1.28 series.
+
+GStreamer 1.28.0 has not been released yet. It will be released in late 2025.
+
+The current stable series is 1.26.
+
+The latest development release towards the upcoming 1.28 stable series is 1.27.1 and was released on 8 July 2025.
+
+1.27.1
+
+The first API/ABI-unstable 1.27.x development snapshot release (1.27.1) was released on 8 July 2025.
+
+Any newly-added API in the 1.27.x series may still change or be removed again before 1.28 and should be considered unstable
+until 1.28 is released.
+
+The 1.27.x release series is for testing and development purposes, and distros should probably not package it.
+
+Highlighted changes in 1.27.1
+
+-   Add AMD HIP plugin
+-   Add Vulkan H.264 encoder and add 10-bit support to Vulkan H.265 decoder
+-   Add LiteRT inference element
+-   Aggregator: expose current-level-* properties on sink pads
+-   Analytics: add general classifier tensor-decoder, facedetector, and more convenience API
+-   alsa: Support enumerating virtual PCM sinks
+-   d3d12: Add d3d12remap element
+-   Wayland: Add basic colorimetrie support
+-   Webkit: New wpe2 plugin making use of the “WPE Platform API”
+-   MPEG-TS demuxer: Add property to disable skew corrections
+-   qml6gloverlay: support directly passing a QQuickItem for QML the render tree
+-   unifxfdsink: Add a property to allow copying to make sink usable with more upstream elements
+-   videorate: Revive “new-pref” property for better control in case of caps changes
+-   wasapi2: Port to IMMDevice based device selection
+-   GstReferenceTimestampMeta can carry additional per-timestamp information now
+-   Added GstLogContext API that allows to fix log spam in several components
+-   New tracer hook to track when buffers are queued/dequeued in buffer pools
+-   gst-inspect-1.0: Prints type info for caps fields now
+-   Pipeline graph dot files now contain information about active tracers
+-   Python bindings: add Gst.Float wrapper, Gst.ValueArray.append_value(), analytics API improvements
+-   cerbero packages: ship vvdec and curl plugins; ship wasapi2 on MingW builds
+-   Removed the gstreamer-vaapi module which has now been superseded by the va plugin
+
+gstreamer
+
+-   aggregator: add sub_latency_min to pad queue size
+-   aggregator: expose current-level-* properties on sink pads
+-   baseparse: Add disable-clip property
+-   buffer: Add optional info structure to GstReferenceTimestampMeta
+-   core changes needed for tensor negotiation
+-   core: gstvalue: fix ANY/EMPTY caps (features) hash
+-   general: Stop checking G_HAVE_GNUC_VARARGS now that we require on c99
+-   Add information about active tracers in dot files
+-   gst: info: Add a GstLogContext API
+-   gstmessage: Debug error message is nullable
+-   gstvalue: add hashing
+-   gstvalue: fix gst_value_is_subset_array_array()
+-   meta: Add g_return_val_if_fail() for NULL valid_tags in gst_meta_api_type_tags_contain_only()
+-   tracer: Add a hook to track when buffers are queued/dequeued in pools
+-   tracer: Make it compile when tracer hooks are disabled
+-   Fix log spam in several components
+-   Misc changes to avoid build failures with fedora 42
+-   meson: rename meson_options.txt to meson.options
+-   tests: More valgrind and test fixes
+-   gst-inspect-1.0: Added type info for caps fields
+
+gst-plugins-base
+
+-   Fix log spam in several components using the new log context API
+-   alsa: Support enumerating virtual PCM sinks
+-   appsink, appsrc: Only notify drop property and not in/out
+-   appsink, appsrc: Add some more stats
+-   decodebin, pbutils: use new GstLogContext API
+-   discoverer: Make gst_discoverer_info_from_variant nullable
+-   discoverer: Enhance debug logging
+-   elements: use set_static_metadata when it’s allowed
+-   general: Stop checking G_HAVE_GNUC_VARARGS now that we require on c99
+-   gl/window: add support for configuring whether a backing surface is needed
+-   gl/x11: need to check display type
+-   gl: Fix support for dmabuf using a DRM format that we can’t emulate with shaders
+-   gl: cocoa: Add navigation event support
+-   gldmabufferpool: disable “free cache” workaround in GstGLBufferPool
+-   gldownload: improve logging of gl-dmabuf pool usage
+-   glupload: Promote fixate caps results print to info
+-   glvideomixer, compositor: fix mouse event handling to return wether upstream handled the events or not.
+-   glwindow_cocoa: fix window not closing (w/o user window handle)
+-   opengl: VA / glimagesink broke in some cases (regression)
+-   opengl: Fix DRM format and modifier negotiation regressions
+-   orc: Update pregenerated files
+-   unifxfdsink: Add an property to allow copying
+-   unixfdsrc: fix allocating FD memory with nonzero offsets
+-   video formats: Add DRM equivalents for 10/12/16 bit SW-decoders formats
+-   video: Add 10bit 422 NV16_10LE40 format
+-   videorate, imagefreeze: add support for JPEG XS
+-   videorate: Revive ‘new-pref’ property
+-   webrtcbin: Include all accepted media formats in SDP answers
+-   gst-device-monitor-1.0: Deinitialize GStreamer before exiting
+-   GStreamer with OpenGL creates an empty “OpenGL Renderer” window on Wayland
+-   meson: rename meson_options.txt to meson.options
+-   tests: More valgrind and test fixes
+
+gst-plugins-good
+
+-   gldownload: improve logging of gl-dmabuf pool usage
+-   imagefreeze: Handle EOS from send_event()
+-   matroskademux: Add support for relative position cues
+-   orc: Update pregenerated files
+-   qml6gloverlay: support directly passing a QQuickItem for QML the render tree
+-   rtph265depay: output profile, tier, level in output caps
+-   rtpjpeg: fix copying of quant data if it spans memory segments
+-   v4l2object: Make extra-controls property mutable in playing state
+-   v4l2object: Provide padding requirements during propose allocation
+-   video: Add 10bit 422 NV16_10LE40 format
+-   videorate, imagefreeze: add support for JPEG XS
+-   y4m: move y4mdec to good to have a single y4m plugin
+-   Fix build with -DGST_REMOVE_DEPRECATED
+-   Name buffer pools for new buffer pool enqueue/dequeue tracer
+-   meson: rename meson_options.txt to meson.options
+-   elements: use set_static_metadata when it’s allowed
+-   tests: More valgrind and test fixes
+
+gst-plugins-bad
+
+-   Fix build with -DGST_REMOVE_DEPRECATED
+-   Misc changes to avoid build failures with fedora 42
+-   analytics: Add transform function to copy the tensor meta
+-   analytics: Fix docs of gst_tensor_check_type()
+-   analytics: Fix transfer annotations of gst_tensor_check_type()
+-   analytics: add a convenient API to retrieve tensor
+-   analytics: add more convenient API to retrieve tensor
+-   analytics: classifier tensor decoder
+-   analytics: Move IoU calculation to gstanalytics lib
+-   analyticsoverlay: add filled-box mode
+-   cuda: Lower debug log level on nvrtc compilation failure
+-   curl: Fix wrong format specifier for macOS
+-   curl: Recover missing comment
+-   d3d12: Add d3d12remap element
+-   d3d12screencapturesrc: Fix OS handle leaks/random crash in WGC mode
+-   d3d12swapchainsink: Add uv-remap and redraw action signal
+-   elements: use set_static_metadata when it’s allowed
+-   general: Stop checking G_HAVE_GNUC_VARARGS now that we require on c99
+-   h264parse: Drop NAL units that can’t be parsed using AU alignment
+-   h264parse: Forward LCEVC caps
+-   h265parser: Make gst_h265_parser_link_slice_hdr public
+-   hip: Add AMD HIP plugin
+-   hip: Add missing #ifdef
+-   hip: stream and event integration
+-   motioncells: fix typo in header comment
+-   mpegtsdemux: Add property to disable skew corrections
+-   mpegtsmux: Read prog-map[PMT_ORDER_<PID>] for PMT order key
+-   nice: Don’t modify struct borrowed by signal
+-   nvjpegenc: Add autogpu mode element
+-   onnx: Cleanup the session creation
+-   onnx: Use system installed Eigen to avoid hash mismatch failure
+-   onnx: produce tensor caps
+-   opengl: Fix DRM format and modifier negotiation regressions
+-   orc: Update pregenerated files
+-   parser: fix spelling of GstAV1SegmentationParams
+-   tensordecoder: facedetector: Detect tensor output from the inference of Ultra Light Face Detection
+-   test: analytics: add more test on tracking mtd
+-   tfliteinference: Add LiteRT inference element
+-   tfliteinference: initialize means and stddevs arrays appropriately
+-   unifxfdsink: Add an property to allow copying
+-   unixfdsrc: fix allocating FD memory with nonzero offsets
+-   v4l2codecs: Fix typos in the documentation
+-   v4l2codecs: Use prop_offset in gst_v4l2_decoder_install_properties
+-   va: remove unused headers
+-   video: Add 10bit 422 NV16_10LE40 format
+-   videorate: Revive ‘new-pref’ property
+-   vkerror: add invalid_video_std_parameters message
+-   vkh264enc: add Vulkan H264 encoder
+-   vkh265dec: add 10 bits support
+-   vkvideoencodeh26x: don’t leak queues and ensure we call teardown() for each test
+-   vtenc: Use strlcpy instead of strncpy
+-   vulkan: use VK_EXT_debug_utils if available
+-   vulkan: Fix drawing too many triangles in fullscreenquad
+-   waylandsink: some property handling fixes
+-   webrtc: Fix compatibility with LiveKit
+-   webrtc: Fix hangup when duplicate sctp association IDs chosen
+-   vulkanupload: refactor frame copy
+-   wasapi2: Log buffer QPC position and status flags
+-   wasapi2: Port to IMMDevice based device selection
+-   wayland: Add basic colorimetrie support
+-   wayland: Add support for local protocols
+-   wayland: Remove custom format mapping
+-   waylandsink: Add force-aspect-ratio property
+-   waylandsink: some property handling fixes
+-   webrtc: Partial revert of !8698
+-   webrtc: stats: Fill data-channel transport stats and increase spec compliance for ICE candidate stats
+-   webrtc: stats: Improve spec compliance for ICE candidate stats
+-   webrtc: Fix compatibility with LiveKit
+-   webrtcbin: Include all accepted media formats in SDP answers
+-   webrtcbin: Make mid optional in offers and answers
+-   webrtcdsp: Respect disabled feature option
+-   wpe2: New WPE plugin making use of the “WPE Platform API”
+-   svtjpegxs: print message for architectures unsupported by SVT-JPEG-XS
+-   x265enc: Add bitrate tags to the output
+-   y4m: move y4mdec to good to have a single y4m plugin
+-   Name buffer pools for new buffer pool enqueue/dequeue tracer
+-   meson: rename meson_options.txt to meson.options
+-   tests: More valgrind and test fixes
+
+gst-plugins-ugly
+
+-   Name buffer pools for new buffer pool enqueue/dequeue tracer
+-   meson: rename meson_options.txt to meson.options
+
+GStreamer Rust plugins
+
+Changes compared to the current stable release (1.26.3) which both track gst-plugins-rs main branch for the time being:
+
+-   aws: s3hlssink: Write to S3 on OutputStream flush
+-   gopbuffer: Push GOPs in order of time on EOS
+-   gtk4: Promote set_caps debug log to info
+-   hlssink3: Use closed fragment location in playlist generation
+-   livekit: add room-timeout
+-   mp4mux: add TAI timestamp muxing
+-   rtpbin2: fix race condition on serialized Queries
+-   rtpbin2: sync: fix race condition
+-   rtprecv: fix SSRC collision event sent in wrong direction
+-   webrtc: sink: avoid recursive locking of the session
+-   webrtc: fix Safari addIceCandidate crash
+-   webrtcsink: fix deadlock on error setting remote description
+-   webrtcsink: add signal to configure mitigation modes
+
+gst-libav
+
+-   Name buffer pools for new buffer pool enqueue/dequeue tracer
+-   meson: rename meson_options.txt to meson.options
+
+gst-rtsp-server
+
+-   meson: rename meson_options.txt to meson.options
+
+gstreamer-vaapi
+
+-   Remove gstreamer-vaapi module which has now been superseded by the va plugin
+
+gstreamer-sharp
+
+-   meson: rename meson_options.txt to meson.options
+
+gst-python
+
+-   analytics: Add python API to iterate over specific Mtd types.
+-   analytics: Add python API to get relation path
+-   analytics: Add API iter_direct_related to GstAnalyticsMeta
+-   Add Gst.Float wrapper
+-   Override Gst.ValueArray.append_value()
+-   meson: rename meson_options.txt to meson.options
+
+gst-editing-services
+
+-   Enhance debug logging
+-   Handle add_control_binding failures
+-   meson: rename meson_options.txt to meson.options
+
+gst-devtools, gst-validate + gst-integration-testsuites
+
+-   devtools: dots-viewer: Add a button to download the SVG file
+-   devtools: dots-viewer: sort static files
+-   elements: use set_static_metadata when it’s allowed
+-   validate: Do not list test files that are not autogenerated in .testlist
+-   validate: Minor launcher improvements
+-   validate: baseclasses: Reset Test.extra_logfiles when copying to start an iteration
+-   validate: launcher: Downgrade non-critical log messages from ERROR to INFO
+-   validate: Add a set of tests for checking if videooverlaycomposition reaches the sink
+-   meson: rename meson_options.txt to meson.options
+
+gstreamer-docs
+
+-   android tutorials: Update provided projects to Gradle 8.11 and API level 24
+
+Development build environment
+
+-   Add devcontainer manifest for our CI image!
+-   Some subproject fixes on Windows
+-   general: Stop checking G_HAVE_GNUC_VARARGS now that we require on c99
+-   meson: rename meson_options.txt to meson.options
+-   cairo: update wrap to 1.18.4
+-   ffmpeg: update wrap to 7.1.1
+-   librsvg: Add wrap
+-   svtjpegxs: Add wrap
+-   wayland-protocols: Update wrap
+-   webrtc-audio-processing: Add patches to wrap to fix compilation with gcc 15
+
+Cerbero build tool and packaging changes in 1.27.1
+
+-   Add override_build_tools property
+-   Add vvdec recipe and build/ship vvdec plugin
+-   Fix gensdkshell command
+-   Fix librsvg recipe FatalError for usupported RUST arch/platform
+-   Fixes for MinGW builds with Meson master
+-   Local source
+-   UX: improve error msg
+-   a52dec: update to 0.8.0 and port to Meson
+-   bootstrap: linux: Install libatomic on RedHat-based distros
+-   build-tools: Update bison and flex
+-   build: honor library_type for autotools recipes
+-   build: use a list instead of a string for configure options
+-   cargo-c: Update to 0.10.13
+-   cdparanoia: port to Meson
+-   cerbero: Add bindgen for Cargo recipes
+-   cerbero: Fix bundle-source bugs
+-   cerbero: Handle rust variant on Linux for old binutils versions
+-   cmake: respect the configured output library type
+-   curl: Add missing payloads
+-   curl: add curl support
+-   curl: fix install step in Windows when target file exists
+-   dvdread: update to 6.1.3 and switch to Meson
+-   expat: update to 2.7.1
+-   glib, gobject-introspection: Update for MSVC patches
+-   gst-devtools, bindgen-cli: Fix install_name_tool relocation error
+-   gst-plugins-bad: Ship wasapi2 plugin in MinGW build as well
+-   gst-plugins-rs: Force preset LIBCLANG_PATH for bindgen
+-   gst-plugins-rs: Update recipe to simplify inheriting
+-   libdvdnav: Fix missing build type
+-   libdvdnav: Update to 6.1.1 and port to Meson
+-   libdvdread: Fix incomplete MSVC compatibility
+-   librsvg: Update to 2.60.0
+-   libxml2: update to 2.14.2
+-   meson: check if Rust variant to configure rustc bin
+-   osxrelocator: Add .so to the allowed dylib extensions
+-   pixman: update to 0.46.0
+-   rust: Update to Rust 1.88 and cargo-c 0.10.14
+-   rustup: Implement installer status caching, inplace target installs and upgrades
+-   rustup: Work around broken symlink support in CI
+-   spandsp: Fix signature compatibility with MSVC x86
+-   spandsp: port to Meson
+-   svt-av1: fix compatibility with CMake 4
+-   y4m: update recipes for the fusion of both plugins
+
+Contributors to 1.27.1
+
+Adrian Perez de Castro, Aleix Pol, Alexander Slobodeniuk, Alicia Boya García, Alyssa Ross, Andoni Morales Alastruey, Andrew
+Yooeun Chun, Arnout Engelen, Artem Martus, Arun Raghavan, Ben Butterworth, Biswapriyo Nath, Brad Hards, Branko Subasic, Carlos
+Bentzen, Carlos Rafael Giani, César Alejandro Torrealba Vázquez, Changyong Ahn, Daniel Morin, David Maseda Neira, David Monge,
+David Smitmanis, Denis Shimizu, Detlev Casanova, Diego Nieto, Dongyun Seo, Doug Nazar, Devon Sookhoo, Edward Hervey, Eli Mallon,
+Elliot Chen, Enock Gomes Neto, Enrique Ocaña González, Eric, F. Duncanh, François Laignel, Gang Zhao, Glyn Davies, Guillaume
+Desmottes, Gustav Fahlen, He Junyan, Hou Qi, Jakub Adam, James Cowgill, Jan Alexander Steffens (heftig), Jan Schmidt, Jan
+Tojnar, Jan Vermaete, Jerome Colle, Jochen Henneberg, Johan Sternerup, Jordan Petridis, Jordan Yelloz, Jorge Zapata, Julian
+Bouzas, L. E. Segovia, Loïc Le Page, Marc Leeman, Marek Olejnik, Mathieu Duponchelle, Matteo Bruni, Matthew Waters, Michael
+Grzeschik, Michael Olbrich, Nicolas Dufresne, Nirbheek Chauhan, Ognyan Tonchev, Olivier Blin, Olivier Crête, Pablo García,
+Philippe Normand, Piotr Brzeziński, Pratik Pachange, Qian Hu (胡骞), Raghavendra Rao, Razvan Grigore, Robert Ayrapetyan, Robert
+Mader, Ruben Gonzalez, Santosh Mahto, Sebastian Dröge, Seungha Yang, Shengqi Yu (喻盛琪), Stefan Andersson, Stéphane Cerveau,
+Taruntej Kanakamalla, Théo Maillart, Thibault Saunier, Tim-Philipp Müller, Vasiliy Doylov, Víctor Manuel Jáquez Leal, Vineet
+Suryan, Wim Taymans, Xavier Claessens,
+
+… and many others who have contributed bug reports, translations, sent suggestions or helped testing. Thank you all!
+
+List of merge requests and issues fixed in 1.27.1
+
+-   List of Merge Requests applied in 1.27.1
+-   List of Issues fixed in 1.27.1
+
+Schedule for 1.28
+
+Our next major feature release will be 1.28, and 1.27.x is the unstable development series leading up to the stable 1.28
+release. The development of 1.27/1.28 will happen in the git main branch of the GStreamer mono repository.
+
+The schedule for 1.28 is yet to be decided, but we’re targetting late 2025.
+
+1.28 will be backwards-compatible to the stable 1.26, 1.24, 1.22, 1.20, 1.18, 1.16, 1.14, 1.12, 1.10, 1.8, 1.6, 1.4, 1.2 and 1.0
+release series.
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+These release notes have been prepared by Tim-Philipp Müller.
+
+License: CC BY-SA 4.0
