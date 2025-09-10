@@ -72,17 +72,21 @@ static GstFlowReturn new_sample(GstElement *sink, CustomData *data) {
             GstClockTime pts = GST_BUFFER_PTS(gstBuffer);
             GstClockTime dts = GST_BUFFER_DTS(gstBuffer);
 
+            // Get current real time for comparison
+            gint64 real_time = g_get_real_time();
+            double real_time_sec = real_time / 1000000.0;
+
             gsize bufSize = gst_buffer_get_size(gstBuffer);
             
             GstMapInfo map;
             gst_buffer_map(gstBuffer, &map, GST_MAP_READ);
 
             if (GST_CLOCK_TIME_IS_VALID(pts)) {
-                g_print("KLV metadata: %.*s (size: %ld bytes) PTS: %" GST_TIME_FORMAT "\n", 
-                        (int)map.size, (char*)map.data, bufSize, GST_TIME_ARGS(pts));
+                g_print("RECEIVER: Real time: %.6f sec | KLV metadata: %.*s (size: %ld bytes) PTS: %" GST_TIME_FORMAT "\n", 
+                        real_time_sec, (int)map.size, (char*)map.data, bufSize, GST_TIME_ARGS(pts));
             } else {
-                g_print("KLV metadata: %.*s (size: %ld bytes) PTS: INVALID\n", 
-                        (int)map.size, (char*)map.data, bufSize);
+                g_print("RECEIVER: Real time: %.6f sec | KLV metadata: %.*s (size: %ld bytes) PTS: INVALID\n", 
+                        real_time_sec, (int)map.size, (char*)map.data, bufSize);
             }
 
             gst_buffer_unmap(gstBuffer, &map);
@@ -105,14 +109,27 @@ int main(int argc, char *argv[]) {
     data.pipeline = gst_pipeline_new("receiver-pipeline");
     data.udpsrc = gst_element_factory_make("udpsrc", "src");
     data.tsdemux = gst_element_factory_make("tsdemux", "demux");
+    g_object_set(data.tsdemux, "latency", 0, NULL);
     
     /* Video processing elements */
     data.videoQueue = gst_element_factory_make("queue", "video-queue");
+    g_object_set(data.videoQueue,
+                 "max-size-buffers", 5,     // Small buffer
+                 "max-size-time", 0,        // No time limit
+                 "max-size-bytes", 0,       // No byte limit
+                 "leaky", 2,
+                 NULL);
     data.h264parse = gst_element_factory_make("h264parse", "video-parse");
     data.avdec_h264 = gst_element_factory_make("avdec_h264", "video-decoder");
     data.videoconvert = gst_element_factory_make("videoconvert", "video-convert");
     data.videosink = gst_element_factory_make("autovideosink", "video-sink");
     
+    g_object_set(data.videosink,
+                 "sync", FALSE,             // Don't sync video to clock
+                 "async", FALSE,            // Don't buffer video
+                 "max_lateness", 0,
+                 NULL);
+
     /* Metadata processing elements */
     data.dataQueue = gst_element_factory_make("queue", "data-queue");
     data.dataSink = gst_element_factory_make("appsink", "data-sink");
@@ -125,10 +142,10 @@ int main(int argc, char *argv[]) {
     }
 
     /* Configure UDP source */
-    g_object_set(data.udpsrc, "port", 5000, NULL);
+    g_object_set(data.udpsrc, "port", 5000,"buffer-size", 2097152, "timeout", 0, "close-socket", FALSE, NULL);
 
     /* Configure appsink for metadata */
-    g_object_set(data.dataSink, "emit-signals", TRUE, NULL);
+    g_object_set(data.dataSink, "emit-signals", TRUE, "sync", TRUE, "async", FALSE, "drop", TRUE, "max-buffers", 1, NULL);
     g_signal_connect(data.dataSink, "new-sample", G_CALLBACK(new_sample), &data);
     g_print("Callback connected successfully.\n");
 
@@ -167,12 +184,25 @@ int main(int argc, char *argv[]) {
 
     /* Wait until error or EOS */
     bus = gst_element_get_bus(data.pipeline);
-    msg = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE,
-                                     GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
-
-    /* Cleanup */
-    if (msg != NULL)
-        gst_message_unref(msg);
+    while (TRUE) {
+        msg = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE,
+                                         GST_MESSAGE_ERROR);
+        
+        if (msg != NULL) {
+            if (GST_MESSAGE_TYPE(msg) == GST_MESSAGE_ERROR) {
+                GError *err;
+                gchar *debug_info;
+                gst_message_parse_error(msg, &err, &debug_info);
+                g_printerr("Error: %s\n", err->message);
+                g_printerr("Debug: %s\n", debug_info ? debug_info : "none");
+                g_clear_error(&err);
+                g_free(debug_info);
+                gst_message_unref(msg);
+                break;  // Only exit on actual errors
+            }
+            gst_message_unref(msg);
+        }
+    }
     gst_object_unref(bus);
     gst_element_set_state(data.pipeline, GST_STATE_NULL);
     gst_object_unref(data.pipeline);
