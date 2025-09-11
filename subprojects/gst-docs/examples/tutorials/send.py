@@ -11,7 +11,7 @@ from nav_msgs.msg import Odometry
 # Add klvdata to path
 sys.path.append('/media/phat-hust/research/VHT/Gstreamer/gstreamer/subprojects/gst-docs/examples/tutorials/gstreamer/subprojects/gst-docs/examples/tutorials/klvdata')
 import klvdata
-from klvdata.misb0601 import UASLocalMetadataSet, SensorLatitude, SensorLongitude, PlatformGroundSpeed, PrecisionTimeStamp
+from klvdata.misb0601 import UASLocalMetadataSet, SensorLatitude, SensorLongitude, PlatformGroundSpeed, PrecisionTimeStamp, MissionID
 from klvdata.common import datetime_to_bytes
 from datetime import datetime, timezone
 import math
@@ -44,7 +44,7 @@ def main():
     
     # Initialize camera
     cap = cv2.VideoCapture(0)  # /dev/video0
-    frame_id = 0
+    frame_id = 1
     
     print("Starting KLV video sender...")
     
@@ -75,19 +75,18 @@ def main():
                 vx = sender_node.latest_odom.twist.twist.linear.x
                 vy = sender_node.latest_odom.twist.twist.linear.y
                 wz = sender_node.latest_odom.twist.twist.linear.z
-                timestamp = datetime.fromtimestamp(
-                    sender_node.latest_odom.header.stamp.sec + sender_node.latest_odom.header.stamp.nanosec * 1e-9,
-                    tz=timezone.utc
-                )
-
+                # ros_time = sender_node.latest_odom.header.stamp.sec + sender_node.latest_odom.header.stamp.nanosec * 1e-9
+                timestamp = datetime.fromtimestamp(time.time(), tz=timezone.utc)
                 timestamp_bytes = datetime_to_bytes(timestamp)
+
                 speed = math.sqrt(vx**2 + vy**2 + wz**2)
                 misb_data.append(PrecisionTimeStamp(timestamp_bytes))
                 misb_data.append(SensorLatitude(x))
                 misb_data.append(SensorLongitude(y))
-                misb_data.append(PlatformGroundSpeed(speed))                
+                misb_data.append(PlatformGroundSpeed(speed)) 
+                misb_data.append(MissionID(f"frame_{frame_id}"))               
                 try:
-                    data = pickle.dumps((misb_data, encoded_bytes))
+                    data = pickle.dumps((misb_data, encoded_bytes, frame_id))
                     print(f"Metadata bytes: {len(misb_data)}, Frame:  {misb_data}")
                     print(f"Frame {frame_id} | KLV encoded | Pos: ({sender_node.latest_odom.pose.pose.position.x:.2f}, {sender_node.latest_odom.pose.pose.position.y:.2f}, {sender_node.latest_odom.pose.pose.position.z:.2f})")
                 except Exception as e:
